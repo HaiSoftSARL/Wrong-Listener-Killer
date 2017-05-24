@@ -6,7 +6,7 @@
 # Version: 2017-05-24
 
 ## Settings
-portcheck=":80" # Which port to check, leaving a space afterwards might help not mistaking
+portcheck=":80" # Which port to check
 allowedname="httpd" # Which process should we get on speccified port
 allowedpath="/usr/sbin/httpd" # Which is the correct path to run it
 allowedusers="root;" # Which is the correct user to run it (separate with ; )
