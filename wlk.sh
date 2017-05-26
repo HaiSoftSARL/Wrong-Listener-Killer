@@ -100,7 +100,7 @@ if [ "${harm}" == "1" ]; then
 	fn_logecho "[INFO] The following process will be killed: ${pid} ${pidname} ${piduser} ${pidcommand}"
 	kill -9 "${pid}"
 	fn_logecho "[OK] Job done, exiting"
-	tail -${maillogsize} "${log}" | mail -s "localhost - ${pidname} - ${portcheck} killed" ${maillog}
+	tail -${maillogsize} "${log}" | mail -s "$(hostname -s) - ${pidname} - ${portcheck} killed" ${maillog}
 else 
 	fn_logecho "[OK] This program seems legit, exiting."
 fi
