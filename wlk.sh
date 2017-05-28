@@ -16,6 +16,7 @@ logdir="/root" # Log directory (don't end with /)
 mailalert="yes" # Wether to send a mail alert or not (yes/no)
 mailaddress="root@localhost" # Mail to send an alert to if a threat is detected
 
+sleeptime="0" # Sleep between kills
 maxruns="30" # How many PID this script can kill
 
 ## Misc vars
@@ -140,20 +141,21 @@ fn_action(){
 		# Misc var to tell that an action has been taken
 		actiontaken="1"
 		# Misc var to count how many time we ran this
-		count=$(($z+1))
+		count=$((count+1))
 		# If $count is greater or equel to $maxruns; then end there
 		if [ "${count}" -ge "${maxruns}" ]; then
 			fn_logecho "[WARNING] Exiting because the loop has reached the maximum ${maxruns} runs"
 			fn_mail_alert
 		# Otherwise, let's run it again
 		else
+			sleep "${sleeptime}"
 			fn_run_functions
 		fi
 	elif [ "${actiontaken}" == "1" ]; then
-		fn_logecho "[OK] The process on port ${portcheck} now meets requirements
+		fn_logecho "[OK] The process on port ${portcheck} now meets requirements"
 		exit
 	else
-		fn_logecho "[OK] The process on port ${portcheck} meets requirements
+		fn_logecho "[OK] The process on port ${portcheck} meets requirements"
 		exit
 	fi
 }
