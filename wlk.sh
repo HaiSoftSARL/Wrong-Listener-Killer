@@ -1,10 +1,10 @@
 #!/bin/bash
 # Name: Wrong Listener Killer
-# Description: Makes sure that the wrong apps don't listen to the ports you want
+# Version: 2017-05-24
+# Description: Kills processes that do not meet defined rules on a given port
 # Help: Default settings are to make sure that what listens to port :80 is httpd and started as root
 # Developer: Robin Labadie
 # Website: www.lrob.fr
-# Version: 2017-05-24
 
 ## Settings
 portcheck=":80" # Which port to check
