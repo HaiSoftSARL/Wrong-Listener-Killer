@@ -168,3 +168,4 @@ fn_run_functions(){
 	fn_evaluate
 	fn_action
 }
+fn_run_functions
