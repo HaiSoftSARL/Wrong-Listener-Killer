@@ -132,9 +132,15 @@ fn_evaluate(){
 
 # Execute an action before proceeding
 fn_actionbefore(){
-	if [ -n "${actionbefore}" ]; then
+	if [ -n "${actionbefore}" ]&&[ "${harm}" == "1" ]&&[ -z "${actiontaken}" ]; then
 		fn_logecho "[ACTION] Applying actionbefore: ${actionbefore}"
 		${actionbefore}
+		actiontaken="1"
+		refresh="1"
+	else
+		# Misc var to tell that an action has been taken
+		actiontaken="1"
+		fn_logecho "[ACTION] Refreshing info ${pid}"
 	fi
 } 
 
@@ -155,23 +161,29 @@ fn_action(){
 		fn_logecho "[INFO] Actual  : Name: ${pidname}\tUser: ${piduser}\tPath: ${pidcommand}"
 		# Take the "before" action
 		fn_actionbefore
-		# Kill the app
-		fn_logecho "[ACTION] Killing PID ${pid}"
-		kill -9 "${pid}"
-		# Reset harm for future tests
-		unset harm
-		# Misc var to tell that an action has been taken
-		actiontaken="1"
-		# Misc var to count how many time we ran this
-		count=$((count+1))
-		# If $count is greater or equel to $maxruns; then end there
-		if [ "${count}" -ge "${maxruns}" ]; then
-			fn_logecho "[WARNING] Exiting because the loop has reached the maximum ${maxruns} runs"
-			fn_mail_alert
-		# Otherwise, let's run it again
+		# If a before action has been done, refresh info
+		if [ -n "${refresh}" ]; then
+			unset refresh
+			fn_define_vars
+			fn_evaluate
+			fn_action
 		else
-			sleep "${sleeptime}"
-			fn_run_functions
+			# Kill the app
+			fn_logecho "[ACTION] Killing PID ${pid}"
+			kill -9 "${pid}"
+			# Reset harm for future tests
+			unset harm
+			# Misc var to count how many time we ran this
+			count=$((count+1))
+			# If $count is greater or equel to $maxruns; then end there
+			if [ "${count}" -ge "${maxruns}" ]; then
+				fn_logecho "[WARNING] Exiting because the loop has reached the maximum ${maxruns} runs"
+				fn_mail_alert
+			# Otherwise, let's run it again
+			else
+				sleep "${sleeptime}"
+				fn_run_functions
+			fi
 		fi
 	elif [ "${actiontaken}" == "1" ]; then
 		fn_logecho "[OK] The process on port ${portcheck} now meets requirements"
