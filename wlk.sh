@@ -12,8 +12,8 @@ allowedname="httpd" # Which process should we get on speccified port
 allowedpath="/usr/sbin/httpd" # Which is the correct path to run it
 allowedusers="root;" # Which is the correct user to run it (separate with ; )
 
-actionbefore="service ${allowedname} restart" # Run a custom action if a problem is found
-actionafter="service ${allowedname} restart" # Run a custom action after a problem was found and processes killed
+preaction="service ${allowedname} restart" # Run a custom action if a problem is found
+postaction="" # Run a custom action after a problem was found and processes killed
 
 logdir="/root" # Log directory (don't end with /)
 mailalert="yes" # Wether to send a mail alert or not (yes/no)
@@ -139,10 +139,10 @@ fn_evaluate(){
 }
 
 # Execute an action before proceeding
-fn_actionbefore(){
-	if [ -n "${actionbefore}" ]&&[ "${harm}" == "1" ]&&[ -z "${actiontaken}" ]; then
-		fn_logecho "[ACTION] Applying actionbefore: ${actionbefore}"
-		${actionbefore}
+fn_preaction(){
+	if [ -n "${preaction}" ]&&[ "${harm}" == "1" ]&&[ -z "${actiontaken}" ]; then
+		fn_logecho "[ACTION] Applying pre-action: ${preaction}"
+		${preaction}
 		actiontaken="1"
 		refresh="1"
 	else
@@ -153,10 +153,10 @@ fn_actionbefore(){
 } 
 
 # Execute an action after proceeding
-fn_actionafter(){
-	if [ -n "${actionafter}" ]; then
-		fn_logecho "[ACTION] Applying actionafter: ${actionafter}"
-		${actionafter}
+fn_postaction(){
+	if [ -n "${postaction}" ]; then
+		fn_logecho "[ACTION] Applying post-action: ${postaction}"
+		${postaction}
 	fi
 }
 
@@ -168,7 +168,7 @@ fn_action(){
 		fn_logecho "[INFO] Expected: Name: ${allowedname}\tUser: ${allowedusers}\tPath: ${allowedpath}"
 		fn_logecho "[INFO] Actual  : Name: ${pidname}\tUser: ${piduser}\tPath: ${pidcommand}"
 		# Take the "before" action
-		fn_actionbefore
+		fn_preaction
 		# If a before action has been done, refresh info
 		if [ -n "${refresh}" ]; then
 			unset refresh
@@ -195,9 +195,11 @@ fn_action(){
 		fi
 	elif [ "${actiontaken}" == "1" ]; then
 		fn_logecho "[OK] The process on port ${portcheck} now meets requirements"
+		fn_postaction
 		fn_mail_alert
 	else
 		fn_logecho "[OK] The process on port ${portcheck} meets requirements"
+		fn_postaction
 		exit
 	fi
 }
