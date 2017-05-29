@@ -40,19 +40,25 @@ fn_logging(){
 	fi
 }
 
+# Give a form to echo messages
+fn_echo_form(){
+	currmessage="$@"
+	echoform="$(date +%Y-%m-%d_%H:%M:%S) - ${selfname} - ${currmessage}"
+}
+
 # Simple echo with date and selfname
 # Usage fn_echo "Your Message"
 fn_echo(){
-	currmessage="$@"
-	echo -e "$(date +%Y-%m-%d_%H:%M:%S) - ${selfname} - ${currmessage}"
+	fn_echo_form
+	echo -e "${echoform}"
 }
 
 # Echo with date and output to log at the same time
 # Usage fn_logecho "Your Message"
 fn_logecho(){
 	fn_echo
-	echo -e "$(date +%Y-%m-%d_%H:%M:%S) - ${selfname} - ${currmessage}" >> "${log}"
-	currlog="${currlog}$(echo -e "$(date +%Y-%m-%d_%H:%M:%S) - ${selfname} - ${currmessage}")"
+	echo -e "${echoform}" >> "${log}"
+	currlog="${currlog}$(echo -e "${echoform}\n")"
 }
 
 # Send mail alert
