@@ -14,6 +14,7 @@ allowedusers="root;" # Which is the correct user to run it (separate with ; )
 
 preaction="service ${allowedname} restart" # Run a custom action if a problem is found
 postaction="" # Run a custom action after a problem was found and processes killed
+downaction="service ${allowedname} start"
 
 logdir="/root" # Log directory (don't end with /)
 mailalert="yes" # Wether to send a mail alert or not (yes/no)
@@ -80,7 +81,11 @@ fn_define_pid(){
 	pid="$(netstat -atunp | grep "${portcheck} " | grep LISTEN | awk '{print $7}' | awk -F "/" '{print $1}')"
 	# If nothing listens unpon first start
 	if [ -z "${pid}" ]&&[ -z "${actiontaken}" ]; then
-		fn_logecho "[INFO] Nothing found on port ${portcheck} | Exit"
+		fn_logecho "[INFO] Nothing found on port ${portcheck}"
+		if [ -n "${downaction}" ]; then
+			fn_logecho "[ACTION] Executig command: ${downaction}"
+			"${downaction}"
+		fi
 		exit
 	# If nothing listens after getting some processes killed
 	elif [ -z "${pid}" ]&&[ "${actiontaken}" == "1" ]; then
