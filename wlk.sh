@@ -83,8 +83,8 @@ fn_define_pid(){
 	if [ -z "${pid}" ]&&[ -z "${actiontaken}" ]; then
 		fn_logecho "[INFO] Nothing found on port ${portcheck}"
 		if [ -n "${downaction}" ]; then
-			fn_logecho "[ACTION] Executig command: ${downaction}"
-			"${downaction}"
+			fn_logecho "[ACTION] Executing command: ${downaction}"
+			${downaction}
 		fi
 		exit
 	# If nothing listens after getting some processes killed
