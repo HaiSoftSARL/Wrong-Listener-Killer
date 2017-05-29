@@ -12,9 +12,9 @@ allowedname="httpd" # Which process should we get on speccified port
 allowedpath="/usr/sbin/httpd" # Which is the correct path to run it
 allowedusers="root;" # Which is the correct user to run it (separate with ; )
 
-preaction="service ${allowedname} restart" # Run a custom action if a problem is found
-postaction="" # Run a custom action after a problem was found and processes killed
-downaction="service ${allowedname} start"
+# preaction="service ${allowedname} restart" # Run a custom action if a problem is found
+postaction="service ${allowedname} restart" # Run a custom action after a problem was found and processes killed
+downaction="service ${allowedname} restart"
 
 logdir="/root" # Log directory (don't end with /)
 mailalert="yes" # Wether to send a mail alert or not (yes/no)
@@ -204,7 +204,6 @@ fn_action(){
 		fn_mail_alert
 	else
 		fn_logecho "[OK] The process on port ${portcheck} meets requirements"
-		fn_postaction
 		exit
 	fi
 }
