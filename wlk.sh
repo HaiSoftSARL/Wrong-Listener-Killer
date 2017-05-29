@@ -12,11 +12,14 @@ allowedname="httpd" # Which process should we get on speccified port
 allowedpath="/usr/sbin/httpd" # Which is the correct path to run it
 allowedusers="root;" # Which is the correct user to run it (separate with ; )
 
+actionbefore="service ${allowedname} restart" # Run a custom action if a problem is found
+actionafter="service ${allowedname} restart" # Run a custom action after a problem was found and processes killed
+
 logdir="/root" # Log directory (don't end with /)
 mailalert="yes" # Wether to send a mail alert or not (yes/no)
 mailaddress="root@localhost" # Mail to send an alert to if a threat is detected
 
-sleeptime="0" # Sleep between kills
+sleeptime="0.1" # Sleep between kills
 maxruns="30" # How many PID this script can kill
 
 ## Misc vars
@@ -127,6 +130,22 @@ fn_evaluate(){
 	fi
 }
 
+# Execute an action before proceeding
+fn_actionbefore(){
+	if [ -n "${actionbefore}" ]; then
+		fn_logecho "[ACTION] Applying actionbefore: ${actionbefore}"
+		${actionbefore}
+	fi
+} 
+
+# Execute an action after proceeding
+fn_actionafter(){
+	if [ -n "${actionafter}" ]; then
+		fn_logecho "[ACTION] Applying actionafter: ${actionafter}"
+		${actionafter}
+	fi
+}
+
 ## Take action
 fn_action(){
 	## Problematic process was found
@@ -134,6 +153,9 @@ fn_action(){
 		fn_logecho "[ALERT] Process on port ${portcheck} does not meet requirements"
 		fn_logecho "[INFO] Expected: Name: ${allowedname}\tUser: ${allowedusers}\tPath: ${allowedpath}"
 		fn_logecho "[INFO] Actual  : Name: ${pidname}\tUser: ${piduser}\tPath: ${pidcommand}"
+		# Take the "before" action
+		fn_actionbefore
+		# Kill the app
 		fn_logecho "[ACTION] Killing PID ${pid}"
 		kill -9 "${pid}"
 		# Reset harm for future tests
@@ -153,7 +175,7 @@ fn_action(){
 		fi
 	elif [ "${actiontaken}" == "1" ]; then
 		fn_logecho "[OK] The process on port ${portcheck} now meets requirements"
-		exit
+		fn_mail_alert
 	else
 		fn_logecho "[OK] The process on port ${portcheck} meets requirements"
 		exit
