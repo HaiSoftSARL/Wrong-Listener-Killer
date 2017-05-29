@@ -60,14 +60,14 @@ fn_logecho(){
 	fn_echo_form
 	echo -e "${echoform}"
 	echo -e "${echoform}" >> "${log}"
-	currlog="${currlog}$(echo -e "${echoform}\n")"
+	currlog="${currlog}${echoform}\n"
 }
 
 # Send mail alert
 fn_mail_alert(){
 	if [ "${mailalert}" == "yes" ]; then
 		fn_logecho "[INFO] Sending mail alert to: ${mailaddress}"
-		echo "${currlog}" | mail -s "$(hostname -s) - ${pidname} - ${portcheck} killed" ${mailaddress}
+		echo -e "${currlog}" | mail -s "$(hostname -s) - ${pidname} - ${portcheck} killed" ${mailaddress}
 	fi
 	# Since this is the last action that should occur
 	exit
