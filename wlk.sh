@@ -82,14 +82,14 @@ fn_define_pid(){
 	# If nothing listens unpon first start
 	if [ -z "${pid}" ]&&[ -z "${actiontaken}" ]; then
 		fn_logecho "[INFO] Nothing found on port ${portcheck}"
-		if [ -n "${downaction}" ]; then
-			fn_logecho "[ACTION] Executing command: ${downaction}"
-			${downaction}
-		fi
+		# Exec downaction command
+		fn_downaction
 		exit
 	# If nothing listens after getting some processes killed
 	elif [ -z "${pid}" ]&&[ "${actiontaken}" == "1" ]; then
-		fn_logecho "[OK] Nothing listens on port ${portcheck} anymore | Exit"
+		fn_logecho "[OK] Nothing listens on port ${portcheck} anymore"
+		# Exec downaction
+		fn_downaction
 		# Send mail alert 
 		fn_mail_alert
 	fi
@@ -162,6 +162,14 @@ fn_postaction(){
 	if [ -n "${postaction}" ]; then
 		fn_logecho "[ACTION] Applying post-action: ${postaction}"
 		${postaction}
+	fi
+}
+
+# Ececute an action when the process is down
+fn_downaction(){
+	if [ -n "${downaction}" ]; then
+		fn_logecho "[ACTION] Service is down: Executing command: ${downaction}"
+		${downaction}
 	fi
 }
 
