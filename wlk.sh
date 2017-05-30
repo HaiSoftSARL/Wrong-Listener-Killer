@@ -20,8 +20,8 @@ logdir="/root" # Log directory (don't end with /)
 mailalert="yes" # Wether to send a mail alert or not (yes/no)
 mailaddress="root@localhost" # Mail to send an alert to if a threat is detected
 
-sleeptime="0.1" # Sleep between kills
-maxruns="30" # How many PID this script can kill
+sleeptime="0" # Sleep between kills
+maxruns="1000" # How many PID this script can kill
 
 ## Misc vars
 selfname="wrong_listener_killer" # Name of the script and log
