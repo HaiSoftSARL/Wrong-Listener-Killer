@@ -12,8 +12,8 @@ allowedname="httpd" # Which process should we get on speccified port
 allowedpath="/usr/sbin/httpd" # Which is the correct path to run it
 allowedusers="root;" # Which is the correct user to run it (separate with ; )
 
-# preaction="service ${allowedname} restart" # Run a custom action if a problem is found
-postaction="service ${allowedname} restart" # Run a custom action after a problem was found and processes killed
+preaction="kill -9 $(pidof ${allowedname})" # Run a custom action if a problem is found
+# postaction="service ${allowedname} restart" # Run a custom action after a problem was found and processes killed
 downaction="service ${allowedname} restart" # What to do if the service is totally down down
 
 logdir="/root" # Log directory (don't end with /)
