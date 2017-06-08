@@ -84,7 +84,8 @@ fn_define_pid(){
 		fn_logecho "[INFO] Nothing found on port ${portcheck}"
 		# Exec downaction command
 		fn_downaction
-		exit
+		# Send mail alert 
+		fn_mail_alert
 	# If nothing listens after getting some processes killed
 	elif [ -z "${pid}" ]&&[ "${actiontaken}" == "1" ]; then
 		fn_logecho "[OK] Nothing listens on port ${portcheck} anymore"
@@ -106,9 +107,10 @@ fn_define_vars(){
 		fn_logecho "[ERROR] Could not get app info with PID"
 		fn_logecho "Exiting"
 		exit 1
+	else
+		# Provide info to the user
+		fn_echo "Current program listening to ${portcheck} is : PID: ${pid}\tName: ${pidname}\tUser: ${piduser}\tPath: ${pidcommand}"
 	fi
-	# Provide info to the user
-	fn_echo "Current program listening to ${portcheck} is : PID: ${pid}\tName: ${pidname}\tUser: ${piduser}\tPath: ${pidcommand}"
 }
 
 ## Evaluate issues
@@ -219,7 +221,6 @@ fn_action(){
 ### RUN FUNCTIONS ###
 fn_logging
 fn_run_functions(){
-	fn_define_pid
 	fn_define_vars
 	fn_evaluate
 	fn_action
