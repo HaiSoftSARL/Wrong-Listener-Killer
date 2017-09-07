@@ -10,7 +10,7 @@
 portcheck=":80" # Which port to check
 allowedname="httpd" # Which process should we get on speccified port
 allowedpath="/usr/sbin/httpd" # Which is the correct path to run it
-allowedusers="root;" # Which is the correct user to run it (separate with ; )
+allowedusers="root;apache;" # Which is the correct user to run it (separate with ; )
 
 preaction="kill -9 $(/usr/sbin/pidof ${allowedname})" # Run a custom action if a problem is found
 # postaction="service ${allowedname} restart" # Run a custom action after a problem was found and processes killed
@@ -84,7 +84,7 @@ fn_define_pid(){
 		fn_logecho "[INFO] Nothing found on port ${portcheck}"
 		# Exec downaction command
 		fn_downaction
-		# Send mail alert 
+		# Send mail alert and exit
 		fn_mail_alert
 	# If nothing listens after getting some processes killed
 	elif [ -z "${pid}" ]&&[ "${actiontaken}" == "1" ]; then
